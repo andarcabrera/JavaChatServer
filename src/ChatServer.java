@@ -11,15 +11,12 @@ import java.net.Socket;
 public class ChatServer {
     public static void main(String[] args) throws IOException {
         ServerSocket chatServer = new ServerSocket(7002);
+        boolean listening = true;
 
-        Socket chatClient = chatServer.accept();
-
-        BufferedReader input = new BufferedReader(new InputStreamReader(chatClient.getInputStream()));
-        PrintWriter output = new PrintWriter(chatClient.getOutputStream(), true);
-
-        String messageFromClient;
-        while ((messageFromClient = input.readLine()) != null) {
-            output.println("MESSAGE: " + messageFromClient);
+        while (listening) {
+            new HandleUser(chatServer.accept()).start();
         }
     }
 }
+
+
