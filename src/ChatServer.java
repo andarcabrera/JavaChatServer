@@ -3,6 +3,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 
 /**
@@ -31,10 +32,8 @@ public class ChatServer {
         synchronized (allOutputStreams) {
             for (Enumeration e = allOutputStreams.elements(); e.hasMoreElements(); ) {
                 PrintWriter currentOutStream = (PrintWriter) e.nextElement();
-
                 currentOutStream.println(message);
             }
-
         }
     }
 

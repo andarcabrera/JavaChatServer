@@ -21,9 +21,8 @@ public class HandleUser extends Thread {
                 PrintWriter output = new PrintWriter(userSocket.getOutputStream(), true);
                 BufferedReader input = new BufferedReader(new InputStreamReader(userSocket.getInputStream()));
         ) {
-            String messageFromUser;
             while (true) {
-                messageFromUser = input.readLine();
+                String messageFromUser = input.readLine();
                 chatServer.transmitMessage(messageFromUser);
             }
         } catch (IOException e) {
