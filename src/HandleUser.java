@@ -7,9 +7,12 @@ import java.net.Socket;
 
 public class HandleUser extends Thread {
     private Socket userSocket = null;
+    private ChatServer chatServer = null;
 
-    public HandleUser(Socket socket) {
+    public HandleUser(ChatServer server, Socket socket) {
         this.userSocket = socket;
+        this.chatServer = server;
+        start();
     }
 
     public void run() {
@@ -18,14 +21,15 @@ public class HandleUser extends Thread {
                 PrintWriter output = new PrintWriter(userSocket.getOutputStream(), true);
                 BufferedReader input = new BufferedReader(new InputStreamReader(userSocket.getInputStream()));
         ) {
-
             String messageFromUser;
-            while ((messageFromUser = input.readLine()) != null) {
-                output.println(messageFromUser);
+            while (true) {
+                messageFromUser = input.readLine();
+                chatServer.transmitMessage(messageFromUser);
             }
-            userSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            chatServer.removeConnection(userSocket);
         }
     }
 }
