@@ -7,28 +7,37 @@ import java.net.Socket;
 
 public class HandleUser extends Thread {
     private Socket userSocket = null;
-    private ChatServer chatServer = null;
+    private ThreadsMgmt allthreads;
 
-    public HandleUser(ChatServer server, Socket socket) {
+    public HandleUser(Socket socket, ThreadsMgmt allThreads) {
         this.userSocket = socket;
-        this.chatServer = server;
+        this.allthreads = allThreads;
         start();
     }
 
     public void run() {
 
         try (
-                PrintWriter output = new PrintWriter(userSocket.getOutputStream(), true);
                 BufferedReader input = new BufferedReader(new InputStreamReader(userSocket.getInputStream()));
+                PrintWriter output = new PrintWriter(userSocket.getOutputStream());
         ) {
             while (true) {
+                allthreads.registerThread(output);
                 String messageFromUser = input.readLine();
-                chatServer.transmitMessage(messageFromUser);
+                allthreads.transmitMessage(messageFromUser);
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            chatServer.removeConnection(userSocket);
+            try {
+                userSocket.close();
+                PrintWriter output = new PrintWriter(userSocket.getOutputStream());
+                allthreads.unregisterThread(output);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
+
+
 }

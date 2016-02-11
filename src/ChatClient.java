@@ -7,9 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-/**
- * Created by andacabrera29 on 2/9/16.
- */
+
 public class ChatClient {
     JTextField textField = new JTextField(40);
     JTextArea messageArea = new JTextArea(8, 40);
