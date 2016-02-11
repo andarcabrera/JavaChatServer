@@ -34,9 +34,12 @@ public class ChatClient {
         input = new BufferedReader(new InputStreamReader(chatClient.getInputStream()));
         output = new PrintWriter(chatClient.getOutputStream(), true);
 
+        String welcome = ("Welcome to the chatroom. Please enter a username");
+        messageArea.append(welcome + "\n");
+
         while (true) {
-            String message = input.readLine();
-            messageArea.append(message + "\n");
+            String messageFromServer = input.readLine();
+            messageArea.append(messageFromServer + "\n");
         }
     }
 }
