@@ -19,25 +19,20 @@ public class HandleUser extends Thread {
 
         try (
                 BufferedReader input = new BufferedReader(new InputStreamReader(userSocket.getInputStream()));
-                PrintWriter output = new PrintWriter(userSocket.getOutputStream());
         ) {
-            while (true) {
-                allthreads.registerThread(output);
-                String messageFromUser = input.readLine();
+
+            String messageFromUser;
+            while ((messageFromUser = input.readLine()) != null) {
                 allthreads.transmitMessage(messageFromUser);
             }
+
+            userSocket.close();
+            PrintWriter output = new PrintWriter(userSocket.getOutputStream());
+            allthreads.unregisterThread(output);
+
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                userSocket.close();
-                PrintWriter output = new PrintWriter(userSocket.getOutputStream());
-                allthreads.unregisterThread(output);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
-
-
 }
+

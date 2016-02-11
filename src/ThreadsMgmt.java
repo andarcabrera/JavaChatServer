@@ -14,10 +14,6 @@ public class ThreadsMgmt {
         activeThreads.remove(closedThread);
     }
 
-    public HashSet<PrintWriter> getActiveThreads() {
-        return activeThreads;
-    }
-
     public void transmitMessage(String message) throws IOException {
         synchronized (activeThreads) {
             for (PrintWriter activeThread : activeThreads) {

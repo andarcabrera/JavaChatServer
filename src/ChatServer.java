@@ -2,7 +2,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Hashtable;
 
 
 public class ChatServer {
@@ -20,7 +19,7 @@ public class ChatServer {
             Socket userSocket = chatServer.accept();
             PrintWriter userOutputStream = new PrintWriter(userSocket.getOutputStream(), true);
             threadMgmt.registerThread(userOutputStream);
-            HandleUser chatThread = new HandleUser(userSocket, threadMgmt);
+            new HandleUser(userSocket, threadMgmt);
         }
     }
 }
