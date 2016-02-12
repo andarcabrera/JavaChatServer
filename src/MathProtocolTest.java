@@ -16,6 +16,11 @@ public class MathProtocolTest {
         assertEquals("You need to give the MATH WIZ some numbers to play with", mp.process(""));
     }
 
+    @Test
+    public void testOneNumber() {
+        assertEquals("1", mp.process("1"));
+    }
+
 
 }
 
