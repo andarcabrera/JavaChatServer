@@ -1,11 +1,20 @@
+import MathWiz.StringMathHelper;
+
 class MathProtocol {
+    StringMathHelper sm = new StringMathHelper();
 
     public String process(String equation) {
-        if (equation == "") {
-            return "You need to give the MATH WIZ some numbers to play with";
+        if ((equation.matches(".*\\d+.*")) && (equation.matches(".*[+-/*]+.*"))) {
+            return calculate(equation);
         } else {
-            return equation;
+            return "You need to give the MATH WIZ some numbers and operators to play with";
         }
     }
+
+    private String calculate(String equation) {
+        String trimmedEq = sm.trim(equation);
+        return trimmedEq;
+    }
+
 }
 
