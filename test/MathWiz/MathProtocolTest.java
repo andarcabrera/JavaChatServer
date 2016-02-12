@@ -23,10 +23,13 @@ public class MathProtocolTest {
         assertEquals(infoNeeded, mp.process("MATH:No digits or operators"));
     }
 
-//    @Test
-//    public void testOperationWithTwoNumbers() {
-//        assertEquals("2", mp.process("MATH:1 + 1"));
-//    }
+    @Test
+    public void testOperationWithTwoNumbers() {
+        assertEquals("2", mp.process("MATH:1 + 1"));
+        assertEquals("4", mp.process("MATH:2 * 2"));
+        assertEquals("8", mp.process("MATH:2 + 2 *2"));
+        assertEquals("50", mp.process("MATH:10 *10 /2"));
+    }
 
 
 }

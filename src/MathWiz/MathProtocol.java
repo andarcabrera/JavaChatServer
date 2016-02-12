@@ -2,6 +2,9 @@ package MathWiz;
 
 import MathWiz.StringMathHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MathProtocol {
     StringMathHelper sm = new StringMathHelper();
 
@@ -14,8 +17,19 @@ public class MathProtocol {
     }
 
     private String calculate(String equation) {
-        String trimmedEq = sm.trim(equation);
-        return trimmedEq;
+        ArrayList<String> numbers = sm.extractNumbers(equation);
+        ArrayList<String> operators = sm.extractOperators(equation);
+        return interleave(numbers, operators);
+    }
+
+    private String interleave(ArrayList numbers, ArrayList operators) {
+        int total = Integer.parseInt(numbers.get(0).toString());
+        for (int i = 1, j = 0; i < numbers.size(); i++, j++) {
+            int nextNumber = Integer.parseInt(numbers.get(i).toString());
+            String operator = operators.get(j).toString();
+            total = sm.stringOperator(total, nextNumber, operator);
+        }
+        return Integer.toString(total);
     }
 
 }
