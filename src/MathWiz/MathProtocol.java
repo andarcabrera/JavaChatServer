@@ -1,6 +1,8 @@
+package MathWiz;
+
 import MathWiz.StringMathHelper;
 
-class MathProtocol {
+public class MathProtocol {
     StringMathHelper sm = new StringMathHelper();
 
     public String process(String equation) {

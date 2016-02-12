@@ -1,3 +1,6 @@
+package MathWiz;
+
+import MathWiz.MathProtocol;
 import org.junit.Before;
 import org.junit.Test;
 
