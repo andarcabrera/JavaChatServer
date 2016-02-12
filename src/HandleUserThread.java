@@ -5,15 +5,14 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 
-public class HandleUser extends Thread {
+public class HandleUserThread extends Thread {
     private Socket userSocket = null;
-    private ThreadsMgmt allthreads;
+    private OutputStreamsMgmt outputStreams;
     private String name;
 
-    public HandleUser(Socket socket, ThreadsMgmt allThreads) {
+    public HandleUserThread(Socket socket, OutputStreamsMgmt outputStreams) {
         this.userSocket = socket;
-        this.allthreads = allThreads;
-        start();
+        this.outputStreams = outputStreams;
     }
 
     public void run() {
@@ -23,29 +22,34 @@ public class HandleUser extends Thread {
                 PrintWriter output = new PrintWriter(userSocket.getOutputStream());
         ) {
 
+            String welcome = ("Welcome to the chatroom. Please enter a username");
+            output.println(welcome);
+            output.flush();
 
             while (true) {
                 String userName = "Please enter a user name! Pretty please...";
                 name = input.readLine();
                 if (name == null || name.isEmpty()) {
                     output.println(userName);
+                    output.flush();
                 } else if (name.contains("Alex")) {
                     output.println("boohoo");
+                    output.flush();
                 } else {
                     break;
                 }
             }
 
-            allthreads.transmitMessage(name + " has joined the chat.");
-
+            outputStreams.transmitMessage(name + " has joined the chat.");
 
             String messageFromUser;
             while ((messageFromUser = input.readLine()) != null) {
-                allthreads.transmitMessage(name + ": " + messageFromUser);
+                outputStreams.transmitMessage(name + ": " + messageFromUser);
             }
+
             userSocket.close();
-            allthreads.transmitMessage(name + " left the chat!");
-            allthreads.unregisterThread(output);
+            outputStreams.transmitMessage(name + " left the chat!");
+            outputStreams.unregisterOutputStream(output);
         } catch (IOException e) {
             e.printStackTrace();
         }

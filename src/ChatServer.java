@@ -5,21 +5,23 @@ import java.net.Socket;
 
 
 public class ChatServer {
-    private ThreadsMgmt threadMgmt = new ThreadsMgmt();
-    private boolean listening = true;
+    private OutputStreamsMgmt outputStreams = new OutputStreamsMgmt();
 
-    public ChatServer() throws IOException {
-        listen();
-    }
-
-    private void listen() throws IOException {
+    public void listen() throws IOException {
         ServerSocket chatServer = new ServerSocket(7002);
 
-        while (listening) {
-            Socket userSocket = chatServer.accept();
-            PrintWriter userOutputStream = new PrintWriter(userSocket.getOutputStream(), true);
-            threadMgmt.registerThread(userOutputStream);
-            new HandleUser(userSocket, threadMgmt);
+        try {
+            while (true) {
+                Socket userSocket = chatServer.accept();
+                PrintWriter userOutputStream = new PrintWriter(userSocket.getOutputStream(), true);
+                outputStreams.registerOutputStream(userOutputStream);
+                HandleUserThread userThread = new HandleUserThread(userSocket, outputStreams);
+                userThread.start();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            chatServer.close();
         }
     }
 }
