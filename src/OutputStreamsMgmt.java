@@ -18,6 +18,7 @@ public class OutputStreamsMgmt {
         synchronized (activeOutputStreams) {
             for (PrintWriter currentOutputStream : activeOutputStreams) {
                 currentOutputStream.println(message);
+                currentOutputStream.flush();
             }
         }
     }
