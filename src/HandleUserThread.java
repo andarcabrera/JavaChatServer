@@ -9,6 +9,7 @@ public class HandleUserThread extends Thread {
     private Socket userSocket = null;
     private OutputStreamsMgmt outputStreams;
     private String name;
+    private MathProtocol mathProtocol = new MathProtocol();
 
     public HandleUserThread(Socket socket, OutputStreamsMgmt outputStreams) {
         this.userSocket = socket;
@@ -32,9 +33,10 @@ public class HandleUserThread extends Thread {
                 if (name == null || name.isEmpty()) {
                     output.println(userName);
                     output.flush();
-                } else if (name.contains("Alex")) {
-                    output.println("boohoo");
+                } else if (name.contains("lex")) {
+                    output.println("Romanians need to go through extra security\n JK");
                     output.flush();
+                    break;
                 } else {
                     break;
                 }
@@ -45,6 +47,10 @@ public class HandleUserThread extends Thread {
             String messageFromUser;
             while ((messageFromUser = input.readLine()) != null) {
                 outputStreams.transmitMessage(name + ": " + messageFromUser);
+                if (messageFromUser.startsWith("MATH")) {
+                    String resolvedEquation = mathProtocol.process(messageFromUser);
+                    outputStreams.transmitMessage("MATH-WIZ-GUESS: " + resolvedEquation);
+                }
             }
 
             userSocket.close();
