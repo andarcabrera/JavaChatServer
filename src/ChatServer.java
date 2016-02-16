@@ -6,6 +6,7 @@ import java.net.Socket;
 
 public class ChatServer {
     private OutputStreamsMgmt outputStreams = new OutputStreamsMgmt();
+    private JVMShutdownHook hook = new JVMShutdownHook();
 
     public void listen() throws IOException {
         ServerSocket chatServer = new ServerSocket(7002);
@@ -21,9 +22,12 @@ public class ChatServer {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
+            Runtime.getRuntime().addShutdownHook(hook);
             chatServer.close();
         }
     }
 }
+
+
 
 
