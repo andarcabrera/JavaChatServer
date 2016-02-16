@@ -3,9 +3,7 @@ package MathWiz;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- * Created by andacabrera29 on 2/12/16.
- */
+
 public class StringMathHelper {
     public ArrayList<String> extractNumbers(String equation) {
         String numbers = equation.replaceAll("[^0-9]+", " ").trim();

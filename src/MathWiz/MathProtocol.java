@@ -1,12 +1,10 @@
 package MathWiz;
 
 import MathWiz.StringMathHelper;
-
 import java.util.ArrayList;
-import java.util.List;
 
 public class MathProtocol {
-    StringMathHelper sm = new StringMathHelper();
+    private StringMathHelper sm = new StringMathHelper();
 
     public String process(String equation) {
         if ((equation.matches(".*\\d+.*")) && (equation.matches(".*[+-/*]+.*"))) {
@@ -23,6 +21,9 @@ public class MathProtocol {
     }
 
     private String interleave(ArrayList numbers, ArrayList operators) {
+        if (lackingOperators(numbers, operators)) {
+            return "It looks like you have too many or too few operators";
+        }
         int total = Integer.parseInt(numbers.get(0).toString());
         for (int i = 1, j = 0; i < numbers.size(); i++, j++) {
             int nextNumber = Integer.parseInt(numbers.get(i).toString());
@@ -30,6 +31,11 @@ public class MathProtocol {
             total = sm.stringOperator(total, nextNumber, operator);
         }
         return Integer.toString(total);
+    }
+
+    private boolean lackingOperators(ArrayList numbers, ArrayList operators) {
+        int sizeDiference = numbers.size() - operators.size();
+        return sizeDiference != 1;
     }
 
 }

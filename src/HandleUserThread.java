@@ -10,8 +10,8 @@ import java.net.Socket;
 public class HandleUserThread extends Thread {
     private Socket userSocket = null;
     private OutputStreamsMgmt outputStreams;
+    private Bots bots = new Bots();
     private String name;
-    private MathProtocol mathProtocol = new MathProtocol();
 
     public HandleUserThread(Socket socket, OutputStreamsMgmt outputStreams) {
         this.userSocket = socket;
@@ -49,9 +49,9 @@ public class HandleUserThread extends Thread {
             String messageFromUser;
             while ((messageFromUser = input.readLine()) != null) {
                 outputStreams.transmitMessage(name + ": " + messageFromUser);
-                if (messageFromUser.startsWith("MATH")) {
-                    String resolvedEquation = mathProtocol.process(messageFromUser);
-                    outputStreams.transmitMessage("MATH-WIZ-GUESS: " + resolvedEquation);
+                String messageFromServer = bots.handleRequest(messageFromUser);
+                if (messageFromServer != null) {
+                    outputStreams.transmitMessage(messageFromServer);
                 }
             }
 

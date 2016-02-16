@@ -24,11 +24,13 @@ public class MathProtocolTest {
     }
 
     @Test
-    public void testOperationWithTwoNumbers() {
+    public void testOperationWithNumbers() {
         assertEquals("2", mp.process("MATH:1 + 1"));
         assertEquals("4", mp.process("MATH:2 * 2"));
         assertEquals("8", mp.process("MATH:2 + 2 *2"));
         assertEquals("50", mp.process("MATH:10 *10 /2"));
+        assertEquals("It looks like you have too many or too few operators", mp.process("MATH:10 *10 /2 9"));
+        assertEquals("It looks like you have too many or too few operators", mp.process("MATH:10 *10 /2 9 - -"));
     }
 
 
