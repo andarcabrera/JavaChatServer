@@ -47,12 +47,13 @@ public class HandleUserThread extends Thread {
             }
 
             String messageFromUser;
-            while (!this.isInterrupted() && ((messageFromUser = input.readLine())) != null) {
+            while (!Thread.interrupted() && ((messageFromUser = input.readLine())) != null) {
                 outputStreams.transmitMessage(name + ": " + messageFromUser);
                 String messageFromServer = bots.handleRequest(messageFromUser);
                 if (messageFromServer != null) {
                     outputStreams.transmitMessage(messageFromServer);
                 }
+
             }
 
             outputStreams.transmitMessage(name + " left the chat!");
@@ -69,6 +70,7 @@ public class HandleUserThread extends Thread {
     }
 
     public void shutdown() {
+        this.interrupt();
         try {
             userSocket.close();
         } catch (IOException e) {
