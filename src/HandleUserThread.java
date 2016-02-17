@@ -12,6 +12,7 @@ public class HandleUserThread extends Thread {
     private OutputStreamsMgmt outputStreams;
     private Bots bots = new Bots();
     private String name;
+    private boolean running = true;
 
     public HandleUserThread(Socket socket, OutputStreamsMgmt outputStreams) {
         this.userSocket = socket;
@@ -25,11 +26,10 @@ public class HandleUserThread extends Thread {
                 PrintWriter output = new PrintWriter(userSocket.getOutputStream());
         ) {
 
-            String welcome = ("Welcome to the chatroom. Please enter a username");
-            output.println(welcome);
-            output.flush();
-
-            while (true) {
+            while (!this.isInterrupted()) {
+                String welcome = ("Welcome to the chatroom. Please enter a username");
+                output.println(welcome);
+                output.flush();
                 String userName = "Please enter a user name! Pretty please...";
                 name = input.readLine();
                 if (name == null || name.isEmpty()) {
@@ -38,16 +38,16 @@ public class HandleUserThread extends Thread {
                 } else if (name.contains("lex")) {
                     output.println("Romanians need to go through extra security\n JK");
                     output.flush();
+                    outputStreams.transmitMessage(name + " has joined the chat.");
                     break;
                 } else {
+                    outputStreams.transmitMessage(name + " has joined the chat.");
                     break;
                 }
             }
 
-            outputStreams.transmitMessage(name + " has joined the chat.");
-
             String messageFromUser;
-            while ((messageFromUser = input.readLine()) != null) {
+            while (!this.isInterrupted() && ((messageFromUser = input.readLine())) != null) {
                 outputStreams.transmitMessage(name + ": " + messageFromUser);
                 String messageFromServer = bots.handleRequest(messageFromUser);
                 if (messageFromServer != null) {
@@ -55,9 +55,22 @@ public class HandleUserThread extends Thread {
                 }
             }
 
-            userSocket.close();
             outputStreams.transmitMessage(name + " left the chat!");
             outputStreams.unregisterOutputStream(output);
+        } catch (IOException e) {
+            System.out.println("Catching interrupting exception!");
+        } finally {
+            try {
+                userSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void shutdown() {
+        try {
+            userSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

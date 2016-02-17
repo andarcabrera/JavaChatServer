@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.io.*;
 import java.net.Socket;
 
@@ -37,8 +38,9 @@ public class ChatClient {
             messageArea.append(messageFromServer + "\n");
         }
 
-        messageArea.append("Lost connection to the server!");
         chatClient.close();
+        messageArea.append("Lost connection to the server!");
+//        frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
     }
 }
 
