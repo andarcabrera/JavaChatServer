@@ -14,7 +14,6 @@ import java.util.Hashtable;
 public class ChatServer {
     private OutputStreamsMgmt outputStreams = new OutputStreamsMgmt();
     private Hashtable<HandleUserThread, Socket> allThreads = new Hashtable<HandleUserThread, Socket>();
-    private InputOutputStreams ioStreams = new InputOutputStreams();
 
     public void listen() throws IOException {
         ServerSocket chatServer = new ServerSocket(7002);
