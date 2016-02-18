@@ -1,13 +1,19 @@
+import Interfaces.InputStream;
+import Interfaces.OutputStream;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 
 public class ChatServer {
     private OutputStreamsMgmt outputStreams = new OutputStreamsMgmt();
-    private ArrayList<HandleUserThread> allThreads = new ArrayList<HandleUserThread>();
+    private Hashtable<HandleUserThread, Socket> allThreads = new Hashtable<HandleUserThread, Socket>();
     private InputOutputStreams ioStreams = new InputOutputStreams();
 
     public void listen() throws IOException {
@@ -15,14 +21,14 @@ public class ChatServer {
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
+                System.out.println("Shut down hook started to close all threads.");
                 try {
                     outputStreams.transmitMessage("Server is closing");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                System.out.println("Closing threads!");
                 stopAllThreads();
-                System.out.println("Shutdown hook completed.");
+                System.out.println("Doug - Shutdown hook completed :).");
             }
         });
 
@@ -30,9 +36,15 @@ public class ChatServer {
             while (true) {
                 Socket userSocket = chatServer.accept();
                 PrintWriter userOutputStream = new PrintWriter(userSocket.getOutputStream(), true);
+
+                BufferedReader inputReader = new BufferedReader(new InputStreamReader(userSocket.getInputStream()));
+                InputStream userInputStream = new ClientSocketInputStream(inputReader);
+
+                OutputStream outputStream = new ClientSocketOutputStream(userOutputStream);
+
                 outputStreams.registerOutputStream(userOutputStream);
-                HandleUserThread userThread = new HandleUserThread(userSocket, outputStreams);
-                allThreads.add(userThread);
+                HandleUserThread userThread = new HandleUserThread(userInputStream, outputStream, outputStreams);
+                allThreads.put(userThread, userSocket);
                 userThread.start();
             }
         } catch (IOException e) {
@@ -45,8 +57,16 @@ public class ChatServer {
 
     private void stopAllThreads() {
         synchronized (allThreads) {
-            for (HandleUserThread thread : allThreads) {
-                thread.shutdown();
+            Enumeration<HandleUserThread> enumKey = allThreads.keys();
+            while (enumKey.hasMoreElements()) {
+                HandleUserThread thread = enumKey.nextElement();
+                Socket socket = allThreads.get(thread);
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                thread.interrupt();
                 try {
                     thread.join();
                 } catch (InterruptedException e) {

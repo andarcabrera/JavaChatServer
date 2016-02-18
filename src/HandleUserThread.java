@@ -1,80 +1,74 @@
+import Interfaces.InputStream;
+import Interfaces.OutputStream;
 import Interfaces.StreamMgmt;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
 
 
 public class HandleUserThread extends Thread {
-    private Socket userSocket = null;
+    private InputStream input;
+    private OutputStream output;
     private StreamMgmt outputStreams;
     private Bots bots = new Bots();
     private String name;
 
-    public HandleUserThread(Socket socket, StreamMgmt outputStreams) {
-        this.userSocket = socket;
+    public HandleUserThread(InputStream inputStream, OutputStream outputStream, StreamMgmt outputStreams) {
+        this.input = inputStream;
+        this.output = outputStream;
         this.outputStreams = outputStreams;
     }
 
-    public void run() {
+    public String readMessage() {
+        String message = input.readMessage();
+        return message;
+    }
 
-        try (
-                BufferedReader input = new BufferedReader(new InputStreamReader(userSocket.getInputStream()));
-                PrintWriter output = new PrintWriter(userSocket.getOutputStream());
-        ) {
+    public void writeMessage(String message) {
+        output.writeMessage(message);
+    }
+
+    public void transmitMessage(String message) {
+        try {
+            outputStreams.transmitMessage(message);
+        } catch (IOException e1) {
+            System.out.println("Cathing interrupted exception in transmitMessage");
+        }
+    }
+
+
+    public void run() {
 
             while (true) {
                 String welcome = ("Welcome to the chatroom. Please enter a username");
-                output.println(welcome);
-                output.flush();
+                writeMessage(welcome);
+
                 String userName = "Please enter a user name! Pretty please...";
-                name = input.readLine();
+                name = readMessage();
+
                 if (name == null || name.isEmpty()) {
-                    output.println(userName);
-                    output.flush();
+                    writeMessage(userName);
                 } else if (name.contains("lex")) {
-                    output.println("Romanians need to go through extra security\n JK");
-                    output.flush();
-                    outputStreams.transmitMessage(name + " has joined the chat.");
+                    writeMessage("Romanians need to go through extra security\n JK");
+                    transmitMessage(name + " has joined the chat.");
                     break;
                 } else {
-                    outputStreams.transmitMessage(name + " has joined the chat.");
+                    transmitMessage(name + " has joined the chat.");
                     break;
                 }
             }
 
             String messageFromUser;
-            while (((messageFromUser = input.readLine())) != null) {
-                outputStreams.transmitMessage(name + ": " + messageFromUser);
+        while (((messageFromUser = readMessage())) != null) {
+            transmitMessage(name + ": " + messageFromUser);
                 String messageFromServer = bots.handleRequest(messageFromUser);
                 if (messageFromServer != null) {
-                    outputStreams.transmitMessage(messageFromServer);
+                    transmitMessage(messageFromServer);
                 }
 
             }
 
-            outputStreams.transmitMessage(name + " left the chat!");
+        transmitMessage(name + " left the chat!");
             outputStreams.unregisterOutputStream(output);
-        } catch (IOException e) {
-            System.out.println("Catching interrupting exception!");
-        } finally {
-            try {
-                userSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void shutdown() {
-        this.interrupt();
-        try {
-            userSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
 

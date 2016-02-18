@@ -1,5 +1,6 @@
 package TestingMocks;
 
+import Interfaces.OutputStream;
 import Interfaces.StreamMgmt;
 
 import java.io.IOException;
@@ -11,7 +12,7 @@ public class OutputStreamsMock implements StreamMgmt {
         activeOutputStreams.add(newOutputStream);
     }
 
-    public void unregisterOutputStream(PrintWriter closedOutputStream) {
+    public void unregisterOutputStream(OutputStream closedOutputStream) {
         activeOutputStreams.remove(closedOutputStream);
     }
 

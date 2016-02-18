@@ -9,7 +9,7 @@ public interface StreamMgmt {
 
     public void registerOutputStream(PrintWriter newOutputStream);
 
-    public void unregisterOutputStream(PrintWriter closedOutputStream);
+    public void unregisterOutputStream(OutputStream closedOutputStream);
 
     public void transmitMessage(String message) throws IOException;
 }

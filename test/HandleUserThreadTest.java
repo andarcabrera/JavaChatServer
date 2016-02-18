@@ -1,20 +1,34 @@
-import TestingMocks.ClientSocketMock;
+import Interfaces.InputStream;
+import Interfaces.OutputStream;
+
+import TestingMocks.InputForTesting;
+import TestingMocks.OutputForTesting;
 import TestingMocks.OutputStreamsMock;
+
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.*;
+
+
 public class HandleUserThreadTest {
     private HandleUserThread userThread;
+    StringBuffer inputBuffer = new StringBuffer();
+    StringBuffer outputBuffer = new StringBuffer();
+
+    InputStream input = new InputForTesting(inputBuffer);
+    OutputStream output = new OutputForTesting(outputBuffer);
+    OutputStreamsMock outputStreams = new OutputStreamsMock();
 
     @Before
     public void setUp() throws Exception {
-        ClientSocketMock socket = new ClientSocketMock("127.0.0.1", 6000);
-        OutputStreamsMock outputStreams = new OutputStreamsMock();
-        userThread = new HandleUserThread(socket, outputStreams);
+        userThread = new HandleUserThread(input, output, outputStreams);
+        inputBuffer.append("Anda");
+        userThread.start();
     }
 
     @Test
-    public void extractNumbersTest() {
-//        assertEquals(toArrayList("1", "1"), sm.extractNumbers("MATH:1+1"));
+    public void checkWelcomeMessage() {
+        assertEquals("Welcome to the chatroom. Please enter a username", outputBuffer.substring(0));
     }
 }
