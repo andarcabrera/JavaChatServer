@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class ChatServer {
     private OutputStreamsMgmt outputStreams = new OutputStreamsMgmt();
     private ArrayList<HandleUserThread> allThreads = new ArrayList<HandleUserThread>();
+    private InputOutputStreams ioStreams = new InputOutputStreams();
 
     public void listen() throws IOException {
         ServerSocket chatServer = new ServerSocket(7002);

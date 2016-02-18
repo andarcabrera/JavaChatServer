@@ -1,9 +1,12 @@
+package TestingMocks;
+
 import Interfaces.StreamMgmt;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class OutputStreamsMgmt implements StreamMgmt {
+
+public class OutputStreamsMock implements StreamMgmt {
     public void registerOutputStream(PrintWriter newOutputStream) {
         activeOutputStreams.add(newOutputStream);
     }

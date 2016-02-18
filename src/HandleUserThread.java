@@ -1,4 +1,4 @@
-import MathWiz.MathProtocol;
+import Interfaces.StreamMgmt;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,12 +9,11 @@ import java.net.Socket;
 
 public class HandleUserThread extends Thread {
     private Socket userSocket = null;
-    private OutputStreamsMgmt outputStreams;
+    private StreamMgmt outputStreams;
     private Bots bots = new Bots();
     private String name;
-    private boolean running = true;
 
-    public HandleUserThread(Socket socket, OutputStreamsMgmt outputStreams) {
+    public HandleUserThread(Socket socket, StreamMgmt outputStreams) {
         this.userSocket = socket;
         this.outputStreams = outputStreams;
     }
@@ -26,7 +25,7 @@ public class HandleUserThread extends Thread {
                 PrintWriter output = new PrintWriter(userSocket.getOutputStream());
         ) {
 
-            while (!this.isInterrupted()) {
+            while (true) {
                 String welcome = ("Welcome to the chatroom. Please enter a username");
                 output.println(welcome);
                 output.flush();
@@ -47,7 +46,7 @@ public class HandleUserThread extends Thread {
             }
 
             String messageFromUser;
-            while (!Thread.interrupted() && ((messageFromUser = input.readLine())) != null) {
+            while (((messageFromUser = input.readLine())) != null) {
                 outputStreams.transmitMessage(name + ": " + messageFromUser);
                 String messageFromServer = bots.handleRequest(messageFromUser);
                 if (messageFromServer != null) {
