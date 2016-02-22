@@ -5,7 +5,7 @@ import Interfaces.StreamMgmt;
 import java.io.IOException;
 
 
-public class HandleUserThread extends Thread {
+public class HandleUserThread implements Runnable {
     private InputStream input;
     private OutputStream output;
     private StreamMgmt outputStreams;
@@ -18,16 +18,16 @@ public class HandleUserThread extends Thread {
         this.outputStreams = outputStreams;
     }
 
-    public String readMessage() {
+    public synchronized String readMessage() {
         String message = input.readMessage();
         return message;
     }
 
-    public void writeMessage(String message) {
+    private synchronized void writeMessage(String message) {
         output.writeMessage(message);
     }
 
-    public void transmitMessage(String message) {
+    private synchronized void transmitMessage(String message) {
         try {
             outputStreams.transmitMessage(message);
         } catch (IOException e1) {
@@ -36,7 +36,7 @@ public class HandleUserThread extends Thread {
     }
 
 
-    public void run() {
+    public synchronized void run() {
 
             while (true) {
                 String welcome = ("Welcome to the chatroom. Please enter a username");

@@ -13,7 +13,7 @@ import java.util.Hashtable;
 
 public class ChatServer {
     private OutputStreamsMgmt outputStreams = new OutputStreamsMgmt();
-    private Hashtable<HandleUserThread, Socket> allThreads = new Hashtable<HandleUserThread, Socket>();
+    private Hashtable<Thread, Socket> allThreads = new Hashtable<Thread, Socket>();
 
     public void listen() throws IOException {
         ServerSocket chatServer = new ServerSocket(7002);
@@ -42,7 +42,7 @@ public class ChatServer {
                 OutputStream outputStream = new ClientSocketOutputStream(userOutputStream);
 
                 outputStreams.registerOutputStream(userOutputStream);
-                HandleUserThread userThread = new HandleUserThread(userInputStream, outputStream, outputStreams);
+                Thread userThread = new Thread(new HandleUserThread(userInputStream, outputStream, outputStreams));
                 allThreads.put(userThread, userSocket);
                 userThread.start();
             }
@@ -56,9 +56,9 @@ public class ChatServer {
 
     private void stopAllThreads() {
         synchronized (allThreads) {
-            Enumeration<HandleUserThread> enumKey = allThreads.keys();
+            Enumeration<Thread> enumKey = allThreads.keys();
             while (enumKey.hasMoreElements()) {
-                HandleUserThread thread = enumKey.nextElement();
+                Thread thread = enumKey.nextElement();
                 Socket socket = allThreads.get(thread);
                 try {
                     socket.close();
